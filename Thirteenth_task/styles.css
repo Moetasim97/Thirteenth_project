@@ -1,0 +1,36 @@
+body {
+  background-color: antiquewhite;
+}
+
+.fit_content {
+  width: -moz-fit-content;
+  width: fit-content;
+}
+
+.fit_content_h {
+  height: -moz-fit-content;
+  height: fit-content;
+}
+
+.list_image {
+  width: 70px;
+  height: 100px;
+  margin-top: 5px;
+}
+
+.list_image:first-child {
+  margin-top: 0px;
+}
+
+.theater_image {
+  width: 200px;
+  height: 310px;
+}
+
+.generic_border {
+  border: 1px solid black;
+}
+
+.admin_area {
+  display: none;
+}/*# sourceMappingURL=styles.css.map */
