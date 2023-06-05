@@ -1,4 +1,19 @@
-
+var eventsMediator = {
+  events: {},
+  on: function (eventName, callbackfn) {
+    this.events[eventName] = this.events[eventName]
+      ? this.events[eventName]
+      : [];
+    this.events[eventName].push(callbackfn);
+  },
+  emit: function (eventName, data) {
+    if (this.events[eventName]) {
+      this.events[eventName].forEach(function (foundCB) {
+        foundCB(data);
+      });
+    }
+  },
+};
 var model_object=[{
     avenger_name:"Captain America",
     avenger_img_src:"Assets/Captain_America_(Steve_Rogers).png",
@@ -20,6 +35,8 @@ var view={
   init:function(){
     this.cache_elements()
     this.render()
+    this.render_admin()
+    this.mount_admin()
   },
   cache_elements:function(){
     var thumbnail_list=document.querySelector(".d-flex.flex-column.fit_content")
@@ -34,6 +51,61 @@ var view={
   
     
   },
+  cache_admin:function(){
+    
+  var admin_button=document.querySelector(".fit_content_h.mt-5")
+  var admin_save_button=document.querySelector(".save_button")
+  var admin_close_button=document.querySelector(".close_button")
+
+  return [admin_button,admin_save_button,admin_close_button]
+
+  },
+
+  render_admin:function(){
+    var [admin_button]=view.cache_admin()
+
+     admin_button.addEventListener("click",function(){
+    document.querySelector(".admin_area").style.display="block"
+   })
+
+  },
+  mount_admin:function(){
+    var [admin_button,admin_save_button,admin_close_button]=view.cache_admin()
+    admin_close_button.addEventListener("click",function(){
+      
+      document.querySelector(".admin_area").style.display="none"
+      
+    })
+    var name_pc=document.querySelector(".image_title")
+    var temporary_image=document.querySelector(".theater_image")
+    var counter_pc=document.querySelector(".counter_value")
+    var temporary_counter=0
+    admin_save_button.addEventListener("click",function(){
+      var avenger_name=document.querySelector("#fname").value
+      var avenger_url=document.querySelector("#lname").value
+      name_pc.textContent=avenger_name
+      counter_pc.textContent=temporary_counter
+      temporary_image.src=avenger_url
+
+      document.querySelector(".admin_area").style.display="none"
+
+      eventsMediator.emit("temporary_image.rendered")
+      
+      
+      
+    })
+
+    eventsMediator.on("temporary_image.rendered",function(){
+      var count=0;
+      temporary_image.addEventListener("click",function(){
+        count++
+        $(".counter_value").text(count)
+      })
+    })
+
+
+
+  }
  
 }
 
@@ -67,76 +139,27 @@ var controller={
       img.addEventListener("click",function(){
         document.querySelector(".img_div").innerHTML=(`<img src=`+model_object[index].avenger_img_src+` class="theater_image generic_border">`)
         document.querySelector(".image_title").textContent=model_object[index].avenger_name
+        document.querySelector(".counter_value").textContent=model_object[index].counter
       })
     })
-    // $(".img_div > img")
-   
+    
+    $(".img_div").on("click",function(){
+      for(let i=0;i<model_object.length;i++){
+        if(document.querySelector(".img_div").lastChild.src.substring(74,)==model_object[i].avenger_img_src){
+          model_object[i].counter+=1
+          console.log(model_object[i].counter)
+          document.querySelector(".counter_value").textContent=model_object[i].counter
+        }
+      }
+     })
   },
   
 
 }
 
- 
-  
 
- 
-
-  
- 
-
-  // document.querySelector(".img_div").addEventListener("click",function(){
-  //   var another_flag=true;
-  //   for(var y=0;y<model_object.length;y++){
-  //     if((document.querySelector(".img_div > img").src).substring(55,)==model_object[y].avenger_img_src){
-  //       model_object[y].counter++
-  //       document.querySelector(".counter_value").textContent=model_object[y].counter;
-  //     }
-  //   }
-  // })
-
-  
-
-  // var admin_button=document.querySelector(".fit_content_h.mt-5")
-  // var admin_save_button=document.querySelector(".save_button")
-  // var admin_close_button=document.querySelector(".close_button")
-
-
-  // admin_button.addEventListener("click",function(){
-  //   document.querySelector(".admin_area").style.display="block"
-  // })
-
-  // admin_close_button.addEventListener("click",function(){
-  //   document.querySelector(".admin_area").style.display="none"
-  // })
-
-  // admin_save_button.addEventListener("click",function(){
-  // document.querySelector(".image_title").textContent=document.querySelector("#fname").value
-  // document.querySelector(".img_div").innerHTML=(`<img src=`+document.querySelector("#lname").value+` class="theater_image generic_border">`)
-  // var flag=true;
-  // for(var c=0;c<model_object.length;c++){
-  //   // debugger;
-  //   console.log(model_object[c].avenger_img_src)
-  //   if(model_object[c].avenger_img_src==document.querySelector(".img_div > img").src){
-  //     flag=false;
-  //     console.log(flag)
-  //     break;
-  //   }
-    
-  // }
-  // if(flag==true){
-  //   var outer_counter=0
-  //   document.querySelector(".img_div > img").addEventListener("click",function(){
-  //     outer_counter++;
-  //     document.querySelector(".counter_value").textContent=outer_counter;
-      
-  //   })
-
-  // }
-  // document.querySelector(".admin_area").style.display="none"
-  // })
   
   view.init()
-  
   controller.mount_events()
 
   
